@@ -2,7 +2,7 @@
 ## Subgrupo DBDCP
 * Márcio Levi Sales Prado - 183680
 * Francisco Vinicius Sousa Guedes - 260440
-* Davi Santos
+* Davi Gabriel Bandeira Coutinho - 183710
 
 ### Modelo Conceitual ER
 ![](images/diagrama%20mc536.png)
