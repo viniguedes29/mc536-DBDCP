@@ -1,17 +1,12 @@
 # Modelo para Apresentação do Lab06 - Patologias, Medicamentos e Efeitos Colaterais em Cypher
 
-Estrutura de pastas:
 
-~~~
-├── README.md  <- arquivo apresentando a tarefa
-~~~
-
-# Equipe `<nome da equipe>`
+# Equipe DBDCP
 
 # Subgrupo `<letra do subgrupo>`
-* `Davi Gabriel Bandeira Coutinho` - `183710`
-* `Francisco Vinicius Sousa Guedes` - `260440`
-* `<nome completo>` - `<RA>`
+* Davi Gabriel Bandeira Coutinho - 183710
+* Francisco Vinicius Sousa Guedes - 260440
+* Marcio Levi Santos Prado - 183680
 
 ## Tarefa de Cypher sobre Patologias, Medicamentos e Efeitos Colaterais
 
@@ -99,7 +94,7 @@ ON MATCH SET t.weight=t.weight+1
 Relacinando Efeitos Colaterais e drogas pelo intermediário
 ~~~cypher
 MATCH (d1:Drug)<-[a]-(p:Person)-[b]->(d2:Pathology)
-WHERE d1.name <> d2.name
+WHERE NOT (d1)-[:Treats]->(d2)
 MERGE (d1)-[r:Cause]->(d2)
 ON CREATE SET r.weight=1
 ON MATCH SET r.weight=r.weight+1
@@ -110,7 +105,27 @@ Que tipo de análise interessante pode ser feita com esse grafo?
 
 Proponha um tipo de análise e escreva uma sentença em Cypher que realize a análise.
 
+Pensamos em duas análises para esse caso.
+Os remédios que mais causam morte e quais os remédios que mais causam efeitos colaterais.
+
 ### Resolução
+Remédios que mais causam morte. Pegamos pela descrição, pois pode haver mais de um código para a morte
+
+Remédios que mais causaram mortes:
+Poderamos que deveríamos utilizar um peso mínimo, para garantir que essa droga está relacionada com o colateral. ALém disso, usamos o nome do colateral, para os casos em que o mesma Patologia tem códigos diferentes
 ~~~cypher
-(escreva aqui a resolução em Cypher)
+MATCH d=()-[r:Cause]->(p)
+WHERE r.weight > 50 and p.name = 'Death' RETURN d LIMIT 25
 ~~~
+
+Essa análise pode ser reproduzida para outros efeitos colateriais, ponderando-se sempre um peso.
+
+Remédios com mais colaterais:
+~~~cypher
+MATCH (d)-[c:Cause]->(s)
+WITH d, apoc.node.degree(d,'Cause>' ) as degree ORDER By degree DESC
+Return DISTINCT d, degree
+~~~
+
+Na função, contamos o grau do vértice, que é a quantidade de doenças que a droga está relacionada pelo rótulo 'Cause'
+
